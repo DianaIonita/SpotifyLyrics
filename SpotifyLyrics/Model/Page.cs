@@ -1,19 +1,27 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 
 namespace SpotifyLyrics.Model
 {
     internal abstract class Page
     {
+        private readonly string _pageUrl;
         protected string Html;
         protected HtmlDocument Document;
 
-        protected Page(string searchPageUrl)
+        protected Page(string pageUrl)
+        {
+            _pageUrl = pageUrl;
+        }
+
+        public async Task Load()
         {
             var client = new WebClient();
-            Html = client.DownloadString(searchPageUrl);
+            Html = await client.DownloadStringTaskAsync(_pageUrl);
             client.Dispose();
             Document = HtmlDocumentFromString(Html);
         }

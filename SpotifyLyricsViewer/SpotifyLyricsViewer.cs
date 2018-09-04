@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SpotifyLyrics;
 using SpotifyLyrics.Model;
@@ -28,13 +29,13 @@ namespace SpotifyLyricsViewer
             UpdateStatusLabel(_spotify);
         }
 
-        private void MainTimer_Tick(object sender, EventArgs e)
+        private async void MainTimer_Tick(object sender, EventArgs e)
         {
             UpdateStatusLabel(_spotify);
             UpdateNowPlayingLabel(_spotify);
             if (SongChanged())
             {
-                UpdateLyrics(_spotify);
+                await UpdateLyrics(_spotify);
             }
         }
 
@@ -53,11 +54,11 @@ namespace SpotifyLyricsViewer
             return true;
         }
 
-        private void UpdateLyrics(Spotify spotify)
+        private async Task UpdateLyrics(Spotify spotify)
         {
             foreach(var provider in _lyricsProviders)
             {
-                var lyrics = provider.ForSong(spotify.CurrentlyPlayingSong);
+                var lyrics = await provider.ForSong(spotify.CurrentlyPlayingSong);
                 if (lyrics != null)
                 {
                     lyricsTextBox.Text = lyrics;

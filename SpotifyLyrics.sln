@@ -7,6 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotifyLyrics", "SpotifyLyr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotifyLyricsViewer", "SpotifyLyricsViewer\SpotifyLyricsViewer.csproj", "{AE35D0E8-956C-46C0-A7EE-BE69FA7E4C84}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{3806AC5F-D028-45D4-BBD6-75B9A72F7FCD}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		FodyWeavers.xml = FodyWeavers.xml
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

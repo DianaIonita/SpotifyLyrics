@@ -1,9 +1,10 @@
-﻿using SpotifyLyrics.Model;
+﻿using System.Threading.Tasks;
+using SpotifyLyrics.Model;
 
 namespace SpotifyLyrics.Providers
 {
     public interface IProvideLyrics
     {
-        string ForSong(Song song);
+        Task<string> ForSong(Song song);
     }
 }

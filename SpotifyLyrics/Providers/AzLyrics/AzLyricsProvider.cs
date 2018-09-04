@@ -1,22 +1,25 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SpotifyLyrics.Model;
 
 namespace SpotifyLyrics.Providers.AzLyrics
 {
     public class AzLyricsProvider : IProvideLyrics
     {
-        public string ForSong(Song song)
+        public async Task<string> ForSong(Song song)
         {
             if (song == null)
             {
-                return string.Empty;
+                return null;
             }
             var searchResultsPage = new AzLyricsSearchResultsPage(CreateSearchUrlFor(song));
+            await searchResultsPage.Load();
             if (!searchResultsPage.HasResults)
             {
                 return null;
             }
             var lyricsPage = new AzLyricsPage(searchResultsPage.FirstResultUrl);
+            await lyricsPage.Load();
             return lyricsPage.Lyrics;
         }
 

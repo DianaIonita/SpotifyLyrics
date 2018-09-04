@@ -15,7 +15,7 @@ namespace SpotifyLyrics.Providers.AzLyrics
             get
             {
                 var noResultsDiv = Document.DocumentNode.SelectSingleNode("//div[@class='container main-page']//div[@class='alert alert-warning']");
-                if (noResultsDiv == null && FirstResultUrl != null)
+                if (noResultsDiv == null)
                 {
                     return true;
                 }

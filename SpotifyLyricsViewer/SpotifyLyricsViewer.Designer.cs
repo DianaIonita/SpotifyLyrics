@@ -48,11 +48,10 @@
             // 
             this.spotifyStatusLabel.AutoSize = true;
             this.spotifyStatusLabel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.spotifyStatusLabel.Location = new System.Drawing.Point(492, 0);
+            this.spotifyStatusLabel.Location = new System.Drawing.Point(527, 0);
             this.spotifyStatusLabel.Name = "spotifyStatusLabel";
-            this.spotifyStatusLabel.Size = new System.Drawing.Size(35, 13);
+            this.spotifyStatusLabel.Size = new System.Drawing.Size(0, 13);
             this.spotifyStatusLabel.TabIndex = 1;
-            this.spotifyStatusLabel.Text = "label1";
             // 
             // lyricsTextBox
             // 
@@ -66,6 +65,7 @@
             this.lyricsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.lyricsTextBox.Size = new System.Drawing.Size(503, 596);
             this.lyricsTextBox.TabIndex = 2;
+            this.lyricsTextBox.Text = "Loading...";
             // 
             // MainTimer
             // 
