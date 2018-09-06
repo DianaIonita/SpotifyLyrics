@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotifyLyrics", "SpotifyLyrics\SpotifyLyrics.csproj", "{ECE71D03-8022-4F59-B4C1-CB430434ECC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotifyLyrics", "src\SpotifyLyrics\SpotifyLyrics.csproj", "{ECE71D03-8022-4F59-B4C1-CB430434ECC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotifyLyricsViewer", "SpotifyLyricsViewer\SpotifyLyricsViewer.csproj", "{AE35D0E8-956C-46C0-A7EE-BE69FA7E4C84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotifyLyricsViewer", "src\SpotifyLyricsViewer\SpotifyLyricsViewer.csproj", "{AE35D0E8-956C-46C0-A7EE-BE69FA7E4C84}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{3806AC5F-D028-45D4-BBD6-75B9A72F7FCD}"
 	ProjectSection(SolutionItems) = preProject
