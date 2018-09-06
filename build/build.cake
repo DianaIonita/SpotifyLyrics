@@ -32,10 +32,14 @@ Task("Restore-Packages")
     NuGetRestore(solution);
 });
 
+Task("Build-Solution")
+    .Does(() =>
+{
+    MSBuild(solution);
+});
+
 Task("Default")
     .IsDependentOn("Restore-Packages")
-.Does(() => {
-   Information("Hello Cake!");
-});
+    .IsDependentOn("Build-Solution");
 
 RunTarget(target);
