@@ -35,7 +35,11 @@ Task("Restore-Packages")
 Task("Build-Solution")
     .Does(() =>
 {
-    MSBuild(solution);
+    var settings = new MSBuildSettings()
+        .SetConfiguration(configuration)
+        .WithTarget("Rebuild");
+
+    MSBuild(solution, settings);
 });
 
 Task("Default")
