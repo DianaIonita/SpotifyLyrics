@@ -1,10 +1,20 @@
+#tool "nuget:?package=GitVersion.CommandLine"
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Variables
+///////////////////////////////////////////////////////////////////////////////
+
+var isCiBuild = !string.IsNullOrWhiteSpace(EnvironmentVariable("BUILD_NUMBER"));
 var solution = "../SpotifyLyrics.sln";
+GitVersion version = null;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -26,6 +36,16 @@ Teardown(ctx =>
 // TASKS
 ///////////////////////////////////////////////////////////////////////////////
 
+Task("Version")
+    .Does(() =>
+{
+    version = GitVersion(new GitVersionSettings {
+        UpdateAssemblyInfo = isCiBuild
+    });
+
+    Information($"Semantic version: {version.FullSemVer}");
+});
+
 Task("Restore-Packages")
     .Does(() =>
 {
@@ -45,5 +65,9 @@ Task("Build-Solution")
 Task("Default")
     .IsDependentOn("Restore-Packages")
     .IsDependentOn("Build-Solution");
+
+Task("CI")
+    .IsDependentOn("Version")
+    .IsDependentOn("Default");
 
 RunTarget(target);
