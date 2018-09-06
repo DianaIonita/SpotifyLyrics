@@ -4,6 +4,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var solution = "../SpotifyLyrics.sln";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -25,7 +26,14 @@ Teardown(ctx =>
 // TASKS
 ///////////////////////////////////////////////////////////////////////////////
 
+Task("Restore-Packages")
+    .Does(() =>
+{
+    NuGetRestore(solution);
+});
+
 Task("Default")
+    .IsDependentOn("Restore-Packages")
 .Does(() => {
    Information("Hello Cake!");
 });
