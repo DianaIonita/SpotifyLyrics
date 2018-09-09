@@ -1,4 +1,5 @@
 #tool "nuget:?package=GitVersion.CommandLine"
+#tool "nuget:?package=JetBrains.ReSharper.CommandLineTools"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -14,6 +15,7 @@ var configuration = Argument("configuration", "Release");
 
 var isCiBuild = !string.IsNullOrWhiteSpace(EnvironmentVariable("BUILD_NUMBER"));
 var solution = "../SpotifyLyrics.sln";
+var buildArtifactsFolder = "../artifacts";
 GitVersion version = null;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,8 +24,11 @@ GitVersion version = null;
 
 Setup(ctx =>
 {
-   // Executed BEFORE the first task.
-   Information("Running tasks...");
+    // Executed BEFORE the first task.
+    Information("Running tasks...");
+
+    CleanDirectory(buildArtifactsFolder);
+
 });
 
 Teardown(ctx =>
@@ -68,12 +73,34 @@ Task("Build-Solution")
     MSBuild(solution, settings);
 });
 
+Task("Find-Duplicates")
+    .Does(() =>
+{
+    DupFinder(solution, new DupFinderSettings{
+        ExcludePattern = new String[]{ "../**/*Designer.cs" },
+        OutputFile = buildArtifactsFolder + "/analysis/dupfinder-output.xml",
+        ThrowExceptionOnFindingDuplicates = false
+    });
+});
+
+Task("Code-Inspections")
+    .Does(() =>
+{
+    InspectCode(solution, new InspectCodeSettings{
+        SolutionWideAnalysis = true,
+        OutputFile = buildArtifactsFolder + "/analysis/inspectcode-output.xml",
+        ThrowExceptionOnFindingViolations = false
+    });
+});
+
 Task("Default")
     .IsDependentOn("Restore-Packages")
     .IsDependentOn("Build-Solution");
 
 Task("CI")
     .IsDependentOn("Version")
-    .IsDependentOn("Default");
+    .IsDependentOn("Default")
+    .IsDependentOn("Code-Inspections")
+    .IsDependentOn("Find-Duplicates");
 
 RunTarget(target);
