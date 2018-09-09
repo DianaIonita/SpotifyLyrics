@@ -12,7 +12,7 @@ max_jobs: 1
 image: Visual Studio 2015
 
 environment:
-  BUILD_NUMBER: {build}
+  BUILD_NUMBER: '{build}'
 
 cache:
   - packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
