@@ -2,6 +2,8 @@
 #tool "nuget:?package=JetBrains.ReSharper.CommandLineTools"
 #tool ReSharperReports
 #addin Cake.ReSharperReports
+#addin nuget:?package=SharpZipLib
+#addin nuget:?package=Cake.Compression
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -30,7 +32,10 @@ Setup(ctx =>
     Information("Running tasks...");
 
     CleanDirectory(buildArtifactsFolder);
-
+    var appFolder = buildArtifactsFolder + "/app";
+    if (!DirectoryExists(appFolder)){
+        CreateDirectory(appFolder);
+    }
 });
 
 Teardown(ctx =>
@@ -100,6 +105,15 @@ Task("Code-Inspections")
         buildArtifactsFolder + "/analysis/inspectcode-output.html");
 });
 
+Task("Package-ForDownload")
+    .IsDependentOn("Version")
+    .Does(() =>
+{
+    string appVersion = isCiBuild ? EnvironmentVariable("GitVersion_FullSemVer") : version.FullSemVer.ToString();
+    ZipCompress("../src/SpotifyLyricsViewer/bin/" + configuration + "/SpotifyLyricsViewer.exe",
+        buildArtifactsFolder + "/app/SpotifyViewer." + appVersion + ".zip");
+});
+
 Task("Default")
     .IsDependentOn("Restore-Packages")
     .IsDependentOn("Build-Solution");
@@ -108,6 +122,7 @@ Task("CI")
     .IsDependentOn("Version")
     .IsDependentOn("Default")
     .IsDependentOn("Code-Inspections")
-    .IsDependentOn("Find-Duplicates");
+    .IsDependentOn("Find-Duplicates")
+    .IsDependentOn("Package-ForDownload");
 
 RunTarget(target);

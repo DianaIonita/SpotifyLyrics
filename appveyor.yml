@@ -35,3 +35,4 @@ artifacts:
   - path: artifacts\analysis\dupfinder-output.html
   - path: artifacts\analysis\inspectcode-output.xml
   - path: artifacts\analysis\inspectcode-output.html
+  - path: artifacts\app\*.zip
