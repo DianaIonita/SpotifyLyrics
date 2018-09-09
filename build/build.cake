@@ -112,8 +112,12 @@ Task("Package-For-Download")
     .Does(() =>
 {
     var appVersion =  version.FullSemVer;
-    ZipCompress("../src/SpotifyLyricsViewer/bin/" + configuration + "/SpotifyLyricsViewer.exe",
-        buildArtifactsFolder + "/app/SpotifyViewer." + appVersion + ".zip");
+
+    var files = new [] {
+        $"../src/SpotifyLyricsViewer/bin/{configuration}/SpotifyLyricsViewer.exe"
+    };
+
+    Zip("../",  buildArtifactsFolder + "/app/SpotifyViewer." + appVersion + ".zip", files);
 });
 
 Task("Default")
