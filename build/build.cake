@@ -39,9 +39,15 @@ Teardown(ctx =>
 Task("Version")
     .Does(() =>
 {
-    version = GitVersion(new GitVersionSettings {
+    var settings = new GitVersionSettings {
         UpdateAssemblyInfo = isCiBuild
-    });
+    };
+
+    if ( isCiBuild ) {
+        settings.OutputType = GitVersionOutput.BuildServer;
+    }
+
+    version = GitVersion(settings);
 
     Information($"Semantic version: {version.FullSemVer}");
 });
