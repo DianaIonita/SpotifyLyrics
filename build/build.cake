@@ -1,5 +1,7 @@
 #tool "nuget:?package=GitVersion.CommandLine"
 #tool "nuget:?package=JetBrains.ReSharper.CommandLineTools"
+#tool ReSharperReports
+#addin Cake.ReSharperReports
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -82,6 +84,8 @@ Task("Find-Duplicates")
         OutputFile = buildArtifactsFolder + "/analysis/dupfinder-output.xml",
         ThrowExceptionOnFindingDuplicates = false
     });
+    ReSharperReports(buildArtifactsFolder + "/analysis/dupfinder-output.xml",
+        buildArtifactsFolder + "/analysis/dupfinder-output.html");
 });
 
 Task("Code-Inspections")
@@ -92,6 +96,8 @@ Task("Code-Inspections")
         OutputFile = buildArtifactsFolder + "/analysis/inspectcode-output.xml",
         ThrowExceptionOnFindingViolations = false
     });
+    ReSharperReports(buildArtifactsFolder + "/analysis/inspectcode-output.xml",
+        buildArtifactsFolder + "/analysis/inspectcode-output.html");
 });
 
 Task("Default")
