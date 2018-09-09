@@ -1,0 +1,34 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+max_jobs: 1
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Build worker image (VM template)
+image: Visual Studio 2015
+
+environment:
+  BUILD_NUMBER: {build}
+
+cache:
+  - packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+  - '%LocalAppData%\NuGet\Cache'    # NuGet < v3
+  - '%LocalAppData%\NuGet\v3-cache' # NuGet v3
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+build_script: ".\build.ps1 -Target CI -Configuration Release"
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+artifacts:
+  - path: artifacts\analysis\dupfinder-output.xml
+  - path: artifacts\analysis\inspectcode-output.xml
