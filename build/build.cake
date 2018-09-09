@@ -52,9 +52,10 @@ Task("Version")
         settings.OutputType = GitVersionOutput.BuildServer;
     }
 
-    version = GitVersion(settings);
-
-    Information($"Semantic version: {version.FullSemVer}");
+    version = GitVersion(settings); // version variable only set if not a CI build
+    if ( !isCiBuild ){
+        Information($"Semantic version: {version.FullSemVer}");
+    }
 });
 
 Task("Restore-Packages")
