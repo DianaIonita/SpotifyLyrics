@@ -57,9 +57,11 @@ Task("Version")
 
     if ( isCiBuild ) {
         settings.OutputType = GitVersionOutput.BuildServer;
+        GitVersion(settings); // Need to run it twice for allow the variable to be populated
     }
 
-    version = GitVersion(settings); // version variable only set if not a CI build
+    version = GitVersion();
+
     if ( !isCiBuild ){
         Information($"Semantic version: {version.FullSemVer}");
     }
@@ -105,11 +107,11 @@ Task("Code-Inspections")
         buildArtifactsFolder + "/analysis/inspectcode-output.html");
 });
 
-Task("Package-ForDownload")
+Task("Package-For-Download")
     .IsDependentOn("Version")
     .Does(() =>
 {
-    string appVersion = isCiBuild ? EnvironmentVariable("GitVersion_FullSemVer") : version.FullSemVer.ToString();
+    var appVersion =  version.FullSemVer;
     ZipCompress("../src/SpotifyLyricsViewer/bin/" + configuration + "/SpotifyLyricsViewer.exe",
         buildArtifactsFolder + "/app/SpotifyViewer." + appVersion + ".zip");
 });
@@ -123,6 +125,6 @@ Task("CI")
     .IsDependentOn("Default")
     .IsDependentOn("Code-Inspections")
     .IsDependentOn("Find-Duplicates")
-    .IsDependentOn("Package-ForDownload");
+    .IsDependentOn("Package-For-Download");
 
 RunTarget(target);
