@@ -23,7 +23,8 @@ cache:
 #       build configuration       #
 #---------------------------------#
 
-build_script: '.\build.ps1 -Target CI -Configuration Release'
+build_script:
+  - ps: '.\build.ps1 -Target CI -Configuration Release'
 
 #---------------------------------#
 #      artifacts configuration    #
