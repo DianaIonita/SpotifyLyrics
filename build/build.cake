@@ -1,4 +1,9 @@
 #tool "nuget:?package=GitVersion.CommandLine"
+#tool "nuget:?package=JetBrains.ReSharper.CommandLineTools"
+#tool ReSharperReports
+#addin Cake.ReSharperReports
+#addin nuget:?package=SharpZipLib
+#addin nuget:?package=Cake.Compression
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -14,6 +19,7 @@ var configuration = Argument("configuration", "Release");
 
 var isCiBuild = !string.IsNullOrWhiteSpace(EnvironmentVariable("BUILD_NUMBER"));
 var solution = "../SpotifyLyrics.sln";
+var buildArtifactsFolder = "../artifacts";
 GitVersion version = null;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,8 +28,14 @@ GitVersion version = null;
 
 Setup(ctx =>
 {
-   // Executed BEFORE the first task.
-   Information("Running tasks...");
+    // Executed BEFORE the first task.
+    Information("Running tasks...");
+
+    CleanDirectory(buildArtifactsFolder);
+    var appFolder = buildArtifactsFolder + "/app";
+    if (!DirectoryExists(appFolder)){
+        CreateDirectory(appFolder);
+    }
 });
 
 Teardown(ctx =>
@@ -39,11 +51,20 @@ Teardown(ctx =>
 Task("Version")
     .Does(() =>
 {
-    version = GitVersion(new GitVersionSettings {
+    var settings = new GitVersionSettings {
         UpdateAssemblyInfo = isCiBuild
-    });
+    };
 
-    Information($"Semantic version: {version.FullSemVer}");
+    if ( isCiBuild ) {
+        settings.OutputType = GitVersionOutput.BuildServer;
+        GitVersion(settings); // Need to run it twice for allow the variable to be populated
+    }
+
+    version = GitVersion();
+
+    if ( !isCiBuild ){
+        Information($"Semantic version: {version.FullSemVer}");
+    }
 });
 
 Task("Restore-Packages")
@@ -62,12 +83,52 @@ Task("Build-Solution")
     MSBuild(solution, settings);
 });
 
+Task("Find-Duplicates")
+    .Does(() =>
+{
+    DupFinder(solution, new DupFinderSettings{
+        ExcludePattern = new String[]{ "../**/*Designer.cs" },
+        OutputFile = buildArtifactsFolder + "/analysis/dupfinder-output.xml",
+        ThrowExceptionOnFindingDuplicates = false
+    });
+    ReSharperReports(buildArtifactsFolder + "/analysis/dupfinder-output.xml",
+        buildArtifactsFolder + "/analysis/dupfinder-output.html");
+});
+
+Task("Code-Inspections")
+    .Does(() =>
+{
+    InspectCode(solution, new InspectCodeSettings{
+        SolutionWideAnalysis = true,
+        OutputFile = buildArtifactsFolder + "/analysis/inspectcode-output.xml",
+        ThrowExceptionOnFindingViolations = false
+    });
+    ReSharperReports(buildArtifactsFolder + "/analysis/inspectcode-output.xml",
+        buildArtifactsFolder + "/analysis/inspectcode-output.html");
+});
+
+Task("Package-For-Download")
+    .IsDependentOn("Version")
+    .Does(() =>
+{
+    var appVersion =  version.FullSemVer;
+
+    var files = new [] {
+        $"../src/SpotifyLyricsViewer/bin/{configuration}/SpotifyLyricsViewer.exe"
+    };
+
+    Zip("../",  buildArtifactsFolder + "/app/SpotifyViewer." + appVersion + ".zip", files);
+});
+
 Task("Default")
     .IsDependentOn("Restore-Packages")
     .IsDependentOn("Build-Solution");
 
 Task("CI")
     .IsDependentOn("Version")
-    .IsDependentOn("Default");
+    .IsDependentOn("Default")
+    .IsDependentOn("Code-Inspections")
+    .IsDependentOn("Find-Duplicates")
+    .IsDependentOn("Package-For-Download");
 
 RunTarget(target);
